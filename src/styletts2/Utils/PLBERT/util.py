@@ -35,7 +35,7 @@ def load_plbert(log_dir, config_path=None, checkpoint_path=None):
 
         iters = [int(f.split('_')[-1].split('.')[0]) for f in ckpts if os.path.isfile(os.path.join(log_dir, f))]
         iters = sorted(iters)[-1]
-        checkpoint_path = log_dir / f"step_{iters}.t7"
+        checkpoint_path = log_dir + "/" + f"step_{iters}.t7"
 
     checkpoint = torch.load(checkpoint_path, map_location='cpu')
     state_dict = checkpoint['net']
@@ -46,7 +46,7 @@ def load_plbert(log_dir, config_path=None, checkpoint_path=None):
         if name.startswith('encoder.'):
             name = name[8:] # remove `encoder.`
             new_state_dict[name] = v
-    del new_state_dict["embeddings.position_ids"]
+    # del new_state_dict["embeddings.position_ids"]
     bert.load_state_dict(new_state_dict, strict=False)
     
     return bert

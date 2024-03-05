@@ -8,6 +8,7 @@ import scipy
 import torch
 import torchaudio
 from cached_path import cached_path
+import re
 torch.manual_seed(0)
 torch.backends.cudnn.benchmark = False
 torch.backends.cudnn.deterministic = True
@@ -35,8 +36,8 @@ LIBRI_TTS_CONFIG_URL = "https://huggingface.co/yl4579/StyleTTS2-LibriTTS/resolve
 ASR_CHECKPOINT_URL = "https://github.com/yl4579/StyleTTS2/raw/main/Utils/ASR/epoch_00080.pth"
 ASR_CONFIG_URL = "https://github.com/yl4579/StyleTTS2/raw/main/Utils/ASR/config.yml"
 F0_CHECKPOINT_URL = "https://github.com/yl4579/StyleTTS2/raw/main/Utils/JDC/bst.t7"
-BERT_CHECKPOINT_URL = "https://github.com/yl4579/StyleTTS2/raw/main/Utils/PLBERT/step_1000000.t7"
-BERT_CONFIG_URL = "https://github.com/yl4579/StyleTTS2/raw/main/Utils/PLBERT/config.yml"
+BERT_CHECKPOINT_URL = "https://huggingface.co/papercup-ai/multilingual-pl-bert/resolve/main/step_1100000.t7"
+BERT_CONFIG_URL = "https://huggingface.co/papercup-ai/multilingual-pl-bert/raw/main/config.yml"
 
 DEFAULT_TARGET_VOICE_URL = "https://styletts2.github.io/wavs/LJSpeech/OOD/GT/00001.wav"
 
@@ -192,7 +193,9 @@ class StyleTTS2:
                   beta=0.7,
                   diffusion_steps=5,
                   embedding_scale=1,
-                  ref_s=None):
+                  ref_s=None,
+                  is_phonemes=False,
+                  speed=1):
         """
         Text-to-speech function
         :param text: Input text to turn into speech.
@@ -217,7 +220,9 @@ class StyleTTS2:
                                        beta=beta,
                                        diffusion_steps=diffusion_steps,
                                        embedding_scale=embedding_scale,
-                                       ref_s=ref_s)
+                                       ref_s=ref_s,
+                                       is_phonemes=False,
+                                       speed=speed)
 
         if ref_s is None:
             # default to clone https://styletts2.github.io/wavs/LJSpeech/OOD/GT/00001.wav voice from LibriVox (public domain)
@@ -226,11 +231,14 @@ class StyleTTS2:
                 target_voice_path = cached_path(DEFAULT_TARGET_VOICE_URL)
             ref_s = self.compute_style(target_voice_path)  # target style vector
 
-        text = text.strip()
-        text = text.replace('"', '')
-        phonemized_text = self.phoneme_converter.phonemize(text)
-        ps = word_tokenize(phonemized_text)
-        phoneme_string = ' '.join(ps)
+        if not is_phonemes:
+            text = text.strip()
+            text = text.replace('"', '')
+            phonemized_text = self.phoneme_converter.phonemize(text)
+            ps = word_tokenize(phonemized_text)
+            phoneme_string = ' '.join(ps)
+        else:
+            phoneme_string = text
 
         textcleaner = TextCleaner()
         tokens = textcleaner(phoneme_string)
@@ -265,6 +273,7 @@ class StyleTTS2:
             duration = self.model.predictor.duration_proj(x)
 
             duration = torch.sigmoid(duration).sum(axis=-1)
+            duration = duration * 1 / speed
             pred_dur = torch.round(duration.squeeze()).clamp(min=1)
 
             pred_aln_trg = torch.zeros(input_lengths, int(pred_dur.sum().data))
@@ -308,7 +317,9 @@ class StyleTTS2:
                        t=0.7,
                        diffusion_steps=5,
                        embedding_scale=1,
-                       ref_s=None):
+                       ref_s=None,
+                       is_phonemes=False,
+                       speed=1):
         """
         Inference for longform text. Used automatically in inference() when needed.
         :param text: Input text to turn into speech.
@@ -345,7 +356,9 @@ class StyleTTS2:
                                                                  beta=beta,
                                                                  t=t,
                                                                  diffusion_steps=diffusion_steps,
-                                                                 embedding_scale=embedding_scale)
+                                                                 embedding_scale=embedding_scale, 
+                                                                 is_phonemes=is_phonemes,
+                                                                 speed=speed)
             segments.append(segment_output)
         output = np.concatenate(segments)
         if output_wav_file:
@@ -360,7 +373,9 @@ class StyleTTS2:
                                beta=0.7,
                                t=0.7,
                                diffusion_steps=5,
-                               embedding_scale=1):
+                               embedding_scale=1,
+                               is_phonemes=False,
+                               speed=1):
         """
         Performs inference for segment of longform text; see long_inference()
         :param text: Input text
@@ -373,13 +388,14 @@ class StyleTTS2:
         :param embedding_scale: Higher scale means style is more conditional to the input text and hence more emotional.
         :return: audio data as a Numpy array
         """
-        text = text.strip()
-        text = text.replace('"', '')
-        phonemized_text = self.phoneme_converter.phonemize(text)
-        ps = word_tokenize(phonemized_text)
-        phoneme_string = ' '.join(ps)
-        phoneme_string = phoneme_string.replace('``', '"')
-        phoneme_string = phoneme_string.replace("''", '"')
+        if not is_phonemes:
+            text = text.strip()
+            text = text.replace('"', '')
+            phonemized_text = self.phoneme_converter.phonemize(text)
+            ps = word_tokenize(phonemized_text)
+            phoneme_string = ' '.join(ps)
+        else:
+            phoneme_string = text
 
         textcleaner = TextCleaner()
         tokens = textcleaner(phoneme_string)
@@ -419,6 +435,7 @@ class StyleTTS2:
             duration = self.model.predictor.duration_proj(x)
 
             duration = torch.sigmoid(duration).sum(axis=-1)
+            duration = duration * 1 / speed
             pred_dur = torch.round(duration.squeeze()).clamp(min=1)
 
 
