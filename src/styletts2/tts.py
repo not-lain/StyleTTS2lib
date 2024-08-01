@@ -378,7 +378,8 @@ class StyleTTS2:
                                diffusion_steps=5,
                                embedding_scale=1,
                                is_phonemes=False,
-                               speed=1):
+                               speed=1,
+                               vocos=False):
         """
         Performs inference for segment of longform text; see long_inference()
         :param text: Input text
