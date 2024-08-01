@@ -29,8 +29,6 @@ from .text_utils import TextCleaner
 from .Utils.PLBERT.util import load_plbert
 from .Modules.diffusion.sampler import DiffusionSampler, ADPM2Sampler, KarrasSchedule
 
-from vocos import Vocos
-
 
 LIBRI_TTS_CHECKPOINT_URL = "https://huggingface.co/yl4579/StyleTTS2-LibriTTS/resolve/main/Models/LibriTTS/epochs_2nd_00020.pth"
 LIBRI_TTS_CONFIG_URL = "https://huggingface.co/yl4579/StyleTTS2-LibriTTS/resolve/main/Models/LibriTTS/config.yml?download=true"
@@ -323,8 +321,7 @@ class StyleTTS2:
                        embedding_scale=1,
                        ref_s=None,
                        is_phonemes=False,
-                       speed=1,
-                       vocos=False):
+                       speed=1):
         """
         Inference for longform text. Used automatically in inference() when needed.
         :param text: Input text to turn into speech.
@@ -380,8 +377,7 @@ class StyleTTS2:
                                diffusion_steps=5,
                                embedding_scale=1,
                                is_phonemes=False,
-                               speed=1,
-                               vocos=False):
+                               speed=1):
         """
         Performs inference for segment of longform text; see long_inference()
         :param text: Input text
@@ -467,11 +463,9 @@ class StyleTTS2:
                 asr_new[:, :, 0] = asr[:, :, 0]
                 asr_new[:, :, 1:] = asr[:, :, 0:-1]
                 asr = asr_new
-            if not vocos:
-                out = self.model.decoder(asr,
+
+            out = self.model.decoder(asr,
                                 F0_pred, N_pred, ref.squeeze().unsqueeze(0))
-            else:
-                vocosd = Vocos.from_pretrained("charactr/vocos-mel-24khz")
-                out = vocosd.decode(N_pred)
+
 
         return out.squeeze().cpu().numpy()[..., :-100], s_pred
