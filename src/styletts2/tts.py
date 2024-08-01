@@ -469,7 +469,7 @@ class StyleTTS2:
                 out = self.model.decoder(asr,
                                 F0_pred, N_pred, ref.squeeze().unsqueeze(0))
             else:
-                vocos = Vocos.from_pretrained("charactr/vocos-mel-24khz")
-                out = vocos.decode(N_pred)
+                vocosd = Vocos.from_pretrained("charactr/vocos-mel-24khz")
+                out = vocosd.decode(N_pred)
 
         return out.squeeze().cpu().numpy()[..., :-100], s_pred
