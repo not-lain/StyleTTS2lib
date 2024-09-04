@@ -77,7 +77,7 @@ class StyleTTS2(
     PyTorchModelHubMixin,
     library_name="styletts2",
     repo_url="https://github.com/korakoe/StyleTTS2lib.git",
-    tags="text-to-speech"
+    tags=["text-to-speech"]
     ):
     # def __init__(self, model_checkpoint_path=None, config_path=None, phoneme_converter='gruut'):
     def __init__(self, model_checkpoint_path=None, config_path=None, phoneme_converter='gruut',LIBRI_TTS_CONFIG=None,ASR_config=None,BERT_CONFIG=None):
