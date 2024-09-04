@@ -180,8 +180,6 @@ class StyleTTS2(
         * weights_manipulation
         """
         self.config  = LIBRI_TTS_CONFIG
-        # either present or passed as parameter
-        ASR_config = self.config.get('ASR_config', ASR_config)
         # saving them in self for easier access later when updating the weights
         self.text_aligner = models.load_ASR_models_v2(ASR_config)
         self.pitch_extractor = models.load_F0_models_v2() 
