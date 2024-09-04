@@ -74,6 +74,7 @@ def segment_text(text):
 
 
 class StyleTTS2(
+    torch.nn.Module,
     PyTorchModelHubMixin,
     library_name="styletts2",
     repo_url="https://github.com/korakoe/StyleTTS2lib.git",
