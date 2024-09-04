@@ -26,8 +26,9 @@ from . import models
 from . import utils
 from .phoneme import PhonemeConverterFactory
 from .text_utils import TextCleaner
-from .Utils.PLBERT.util import load_plbert
+from .Utils.PLBERT.util import load_plbert,load_plbert_v2
 from .Modules.diffusion.sampler import DiffusionSampler, ADPM2Sampler, KarrasSchedule
+from huggingface_hub import PyTorchModelHubMixin
 
 
 LIBRI_TTS_CHECKPOINT_URL = "https://huggingface.co/yl4579/StyleTTS2-LibriTTS/resolve/main/Models/LibriTTS/epochs_2nd_00020.pth"
@@ -72,14 +73,23 @@ def segment_text(text):
     return segments
 
 
-class StyleTTS2:
-    def __init__(self, model_checkpoint_path=None, config_path=None, phoneme_converter='gruut'):
+class StyleTTS2(
+    PyTorchModelHubMixin,
+    library_name="styletts2",
+    repo_url="https://github.com/korakoe/StyleTTS2lib.git",
+    tags="text-to-speech"
+    ):
+    # def __init__(self, model_checkpoint_path=None, config_path=None, phoneme_converter='gruut'):
+    def __init__(self, model_checkpoint_path=None, config_path=None, phoneme_converter='gruut',LIBRI_TTS_CONFIG=None,ASR_config=None,BERT_CONFIG=None):
         self.model = None
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.phoneme_converter = PhonemeConverterFactory.load_phoneme_converter(phoneme_converter)
         self.config = None
         self.model_params = None
-        self.model = self.load_model(model_path=model_checkpoint_path, config_path=config_path)
+        if not LIBRI_TTS_CONFIG :
+            self.model = self.load_model(model_path=model_checkpoint_path, config_path=config_path)
+        else :
+            self.model = self.load_model_v2(LIBRI_TTS_CONFIG=LIBRI_TTS_CONFIG,ASR_config=ASR_config,plbert_config=BERT_CONFIG)
 
         self.sampler = DiffusionSampler(
             self.model.diffusion.diffusion,
@@ -162,6 +172,26 @@ class StyleTTS2:
         _ = [model[key].eval() for key in model]
 
         return model
+    
+    def load_model_v2(self,LIBRI_TTS_CONFIG,ASR_config,plbert_config):
+        """
+        * load_config
+        * load_checkpoint 
+        * weights_manipulation
+        """
+        self.config  = LIBRI_TTS_CONFIG
+        # either present or passed as parameter
+        ASR_config = self.config.get('ASR_config', ASR_config)
+        # saving them in self for easier access later when updating the weights
+        self.text_aligner = models.load_ASR_models_v2(ASR_config)
+        self.pitch_extractor = models.load_F0_models_v2() 
+        self.plbert = load_plbert_v2(plbert_config=plbert_config)
+        self.model_params = utils.recursive_munch(self.config['model_params'])
+        model = models.build_model(self.model_params, self.text_aligner, self.pitch_extractor, self.plbert)
+        _ = [model[key].eval() for key in model]
+        _ = [model[key].to(self.device) for key in model]
+        return model
+
 
 
     def compute_style(self, path):

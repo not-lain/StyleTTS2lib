@@ -591,6 +591,16 @@ def load_F0_models(path):
     
     return F0_model
 
+def load_F0_models_v2():
+    """
+    * load_checkpoint
+    """
+    F0_model = JDCNet(num_class=1, seq_len=192)
+    _ = F0_model.train()
+    
+    return F0_model
+
+
 def load_ASR_models(ASR_MODEL_PATH, ASR_MODEL_CONFIG):
     # load ASR model
     def _load_config(path):
@@ -610,6 +620,23 @@ def load_ASR_models(ASR_MODEL_PATH, ASR_MODEL_CONFIG):
     _ = asr_model.train()
 
     return asr_model
+
+def load_ASR_models_v2(ASR_MODEL_CONFIG):
+    """"
+    * config 
+    * custom model path
+    """
+    def _load_model(model_config):
+        model = ASRCNN(**model_config)
+        return model
+
+    asr_model_config = ASR_MODEL_CONFIG['model_params']
+    asr_model = _load_model(asr_model_config)
+    
+    _ = asr_model.train()
+
+    return asr_model
+
 
 def build_model(args, text_aligner, pitch_extractor, bert):
     assert args.decoder.type in ['istftnet', 'hifigan'], 'Decoder type unknown'
