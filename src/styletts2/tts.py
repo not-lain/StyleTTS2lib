@@ -82,6 +82,7 @@ class StyleTTS2(
     ):
     # def __init__(self, model_checkpoint_path=None, config_path=None, phoneme_converter='gruut'):
     def __init__(self, model_checkpoint_path=None, config_path=None, phoneme_converter='gruut',LIBRI_TTS_CONFIG=None,ASR_config=None,BERT_CONFIG=None):
+        super(StyleTTS2, self).__init__()
         self.model = None
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.phoneme_converter = PhonemeConverterFactory.load_phoneme_converter(phoneme_converter)
