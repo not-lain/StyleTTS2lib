@@ -220,8 +220,7 @@ class StyleTTS2(
                   embedding_scale=1,
                   ref_s=None,
                   is_phonemes=False,
-                  speed=1,
-                  vocos=False):
+                  speed=1):
         """
         Text-to-speech function
         :param text: Input text to turn into speech.
@@ -247,9 +246,8 @@ class StyleTTS2(
                                        diffusion_steps=diffusion_steps,
                                        embedding_scale=embedding_scale,
                                        ref_s=ref_s,
-                                       is_phonemes=False,
-                                       speed=speed,
-                                       vocos=False)
+                                       is_phonemes=is_phonemes,
+                                       speed=speed)
 
         if ref_s is None:
             # default to clone https://styletts2.github.io/wavs/LJSpeech/OOD/GT/00001.wav voice from LibriVox (public domain)
