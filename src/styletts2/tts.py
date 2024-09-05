@@ -220,7 +220,8 @@ class StyleTTS2(
                   embedding_scale=1,
                   ref_s=None,
                   is_phonemes=False,
-                  speed=1):
+                  speed=1,
+                  vocos=False):
         """
         Text-to-speech function
         :param text: Input text to turn into speech.
@@ -247,7 +248,8 @@ class StyleTTS2(
                                        embedding_scale=embedding_scale,
                                        ref_s=ref_s,
                                        is_phonemes=False,
-                                       speed=speed)
+                                       speed=speed,
+                                       vocos=False)
 
         if ref_s is None:
             # default to clone https://styletts2.github.io/wavs/LJSpeech/OOD/GT/00001.wav voice from LibriVox (public domain)
@@ -489,5 +491,6 @@ class StyleTTS2(
 
             out = self.model.decoder(asr,
                                 F0_pred, N_pred, ref.squeeze().unsqueeze(0))
+
 
         return out.squeeze().cpu().numpy()[..., :-100], s_pred
