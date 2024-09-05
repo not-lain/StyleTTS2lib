@@ -592,9 +592,6 @@ def load_F0_models(path):
     return F0_model
 
 def load_F0_models_v2():
-    """
-    * load_checkpoint
-    """
     F0_model = JDCNet(num_class=1, seq_len=192)
     _ = F0_model.train()
     
@@ -622,10 +619,6 @@ def load_ASR_models(ASR_MODEL_PATH, ASR_MODEL_CONFIG):
     return asr_model
 
 def load_ASR_models_v2(ASR_MODEL_CONFIG):
-    """"
-    * config 
-    * custom model path
-    """
     def _load_model(model_config):
         model = ASRCNN(**model_config)
         return model

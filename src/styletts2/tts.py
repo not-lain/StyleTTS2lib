@@ -176,11 +176,6 @@ class StyleTTS2(
         return model
     
     def load_model_v2(self,LIBRI_TTS_CONFIG,ASR_config,plbert_config):
-        """
-        * load_config
-        * load_checkpoint 
-        * weights_manipulation
-        """
         self.config  = LIBRI_TTS_CONFIG
         # saving them in self for easier access later when updating the weights
         self.text_aligner = models.load_ASR_models_v2(ASR_config)
