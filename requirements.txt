@@ -1,7 +1,7 @@
 setuptools>=42
 wheel>=0.37
 torch
-huggingface_hub>=0.24
+huggingface_hub>=0.23
 soundfile
 torchaudio
 munch 
