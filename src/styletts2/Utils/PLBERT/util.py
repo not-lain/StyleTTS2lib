@@ -52,11 +52,6 @@ def load_plbert(log_dir, config_path=None, checkpoint_path=None):
     return bert
 
 def load_plbert_v2(plbert_config):
-    """
-    * load_config
-    * load_weights
-    * weights_manipulation
-    """
     albert_base_configuration = AlbertConfig(**plbert_config['model_params'])
     bert = CustomAlbert(albert_base_configuration)
     return bert

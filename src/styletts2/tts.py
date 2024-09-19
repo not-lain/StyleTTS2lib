@@ -133,7 +133,7 @@ class StyleTTS2(
 
         # load pretrained F0 model
         F0_path = self.config.get('F0_path', False)
-        if F0_path or not Path(F0_path).exists():
+        if not F0_path or not Path(F0_path).exists():
             print("Invalid F0 model path. Loading default model...")
             F0_path = cached_path(F0_CHECKPOINT_URL)
         pitch_extractor = models.load_F0_models(F0_path)
@@ -176,11 +176,6 @@ class StyleTTS2(
         return model
     
     def load_model_v2(self,LIBRI_TTS_CONFIG,ASR_config,plbert_config):
-        """
-        * load_config
-        * load_checkpoint 
-        * weights_manipulation
-        """
         self.config  = LIBRI_TTS_CONFIG
         # saving them in self for easier access later when updating the weights
         self.text_aligner = models.load_ASR_models_v2(ASR_config)
@@ -251,7 +246,7 @@ class StyleTTS2(
                                        diffusion_steps=diffusion_steps,
                                        embedding_scale=embedding_scale,
                                        ref_s=ref_s,
-                                       is_phonemes=False,
+                                       is_phonemes=is_phonemes,
                                        speed=speed)
 
         if ref_s is None:
@@ -494,5 +489,6 @@ class StyleTTS2(
 
             out = self.model.decoder(asr,
                                 F0_pred, N_pred, ref.squeeze().unsqueeze(0))
+
 
         return out.squeeze().cpu().numpy()[..., :-100], s_pred
