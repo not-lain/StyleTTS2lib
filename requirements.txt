@@ -1,9 +1,9 @@
 setuptools>=42
 wheel>=0.37
-torch
+torch==2.1.2
 huggingface_hub>=0.23
 soundfile
-torchaudio
+torchaudio==2.1.2
 munch 
 pydub 
 PyYAML 
