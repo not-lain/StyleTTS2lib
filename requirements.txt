@@ -25,4 +25,4 @@ gruut>=2.3.4
 gruut-ipa>=0.13.0
 gruut-lang-en>=2.0.0
 networkx 
-git+https://github.com/resemble-ai/monotonic_align.git
+monotonic_align @ git+https://github.com/resemble-ai/monotonic_align.git
