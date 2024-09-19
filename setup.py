@@ -7,7 +7,7 @@ with open("requirements.txt", "r", encoding="utf-8") as f:
     required = f.read().splitlines()
 
 setup(
-    name="StyleTTS2lib",
+    name="styletts2lib",
     version="0.25.0",
     description="a repository for StyleTTS2",
     long_description=pathlib.Path("README.md").read_text(encoding="utf-8"),
@@ -16,7 +16,7 @@ setup(
     url="https://github.com/korakoe/StyleTTS2lib",
     Issues="https://github.com/korakoe/StyleTTS2lib/issues",
     authors=[{"name": "ButterCream", "email": "korakoe@gmail.com"}],
-    license="Apache 2.0 License", # change this to MIT
+    license="MIT License", # change this to MIT
     package_dir={"": "src"},
     packages=find_packages("src"),
     include_package_data=True,

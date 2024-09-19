@@ -21,7 +21,8 @@ scipy
 tqdm 
 typing 
 typing-extensions
-gruut 
-gruut-ipa 
-gruut-lang-en
+gruut>=2.3.4
+gruut-ipa>=0.13.0
+gruut-lang-en>=2.0.0
 networkx 
+git+https://github.com/resemble-ai/monotonic_align.git
