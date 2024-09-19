@@ -12,9 +12,9 @@ setup(
     description="a repository for StyleTTS2",
     long_description=pathlib.Path("README.md").read_text(encoding="utf-8"),
     long_description_content_type="text/markdown",
-    Homepage="https://github.com/korakoe/StyleTTS2lib",
-    url="https://github.com/korakoe/StyleTTS2lib",
-    Issues="https://github.com/korakoe/StyleTTS2lib/issues",
+    Homepage="https://github.com/not-lain/StyleTTS2lib",
+    url="https://github.com/not-lain/StyleTTS2lib",
+    Issues="https://github.com/not-lain/StyleTTS2lib/issues",
     authors=[{"name": "ButterCream", "email": "korakoe@gmail.com"}],
     license="MIT License", # change this to MIT
     package_dir={"": "src"},
