@@ -23,7 +23,6 @@ setup(
     classifiers=[
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
-        "License :: OSI Approved :: Apache Software License",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
     ],
     use_scm_version=True,
